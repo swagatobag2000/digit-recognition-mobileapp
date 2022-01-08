@@ -12,7 +12,7 @@ class PredictionWidget extends StatelessWidget {
         Text(
           '$num',
           style: TextStyle(
-            fontSize: 60,
+            fontSize: 20.0,
             fontWeight: FontWeight.bold,
             color: prediction == null
                 ? Colors.black
@@ -23,9 +23,7 @@ class PredictionWidget extends StatelessWidget {
         ),
         Text(
           '${prediction == null ? '' : prediction.confidence.toStringAsFixed(3)}',
-          style: TextStyle(
-            fontSize: 12,
-          ),
+          style: TextStyle(fontSize: 12.0),
         )
       ],
     );
@@ -47,7 +45,6 @@ class PredictionWidget extends StatelessWidget {
     predictions?.forEach((prediction) {
       data[prediction.index] = prediction;
     });
-
     return data;
   }
 
@@ -55,21 +52,22 @@ class PredictionWidget extends StatelessWidget {
   Widget build(BuildContext context) {
     var styles = getPredictionStyles(this.predictions);
 
-    return Column(
-      children: <Widget>[
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            for (var i = 0; i < 5; i++) _numberWidget(i, styles[i])
-          ],
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            for (var i = 5; i < 10; i++) _numberWidget(i, styles[i])
-          ],
-        )
-      ],
+    return Flexible(
+      child: ListView(
+        shrinkWrap: true,
+        children: <Widget>[
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: [for (var i = 0; i < 5; i++) _numberWidget(i, styles[i])],
+          ),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+            children: <Widget>[
+              for (var i = 5; i < 10; i++) _numberWidget(i, styles[i])
+            ],
+          )
+        ],
+      ),
     );
   }
 }

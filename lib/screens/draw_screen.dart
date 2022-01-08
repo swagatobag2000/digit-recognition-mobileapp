@@ -8,15 +8,18 @@ import 'package:mnistdigitrecognizer/services/recognizer.dart';
 import 'package:mnistdigitrecognizer/utils/constants.dart';
 
 class DrawScreen extends StatefulWidget {
+  const DrawScreen({Key key}) : super(key: key);
+
   @override
   _DrawScreenState createState() => _DrawScreenState();
 }
 
 class _DrawScreenState extends State<DrawScreen> {
-  final _points = List<Offset>();
+  List<DrawingArea> _points = [];
   final _recognizer = Recognizer();
   List<Prediction> _prediction;
   bool initialize = false;
+  final GlobalKey canvasKey = GlobalKey();
 
   @override
   void initState() {
@@ -29,42 +32,50 @@ class _DrawScreenState extends State<DrawScreen> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Digit Recognizer'),
+        actions: [
+          IconButton(
+              onPressed: () async {
+                final picture = Recognizer().pointsToPicture(context, _points);
+                Uint8List pngBytes = await Recognizer()
+                    .imageToByteListUint8(picture, Constants.mnistImageSize);
+                print(pngBytes);
+              },
+              icon: Icon(Icons.save_rounded)),
+        ],
       ),
       body: Column(
         children: <Widget>[
-          Row(
-            children: <Widget>[
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(8.0),
-                  child: Column(
-                    children: <Widget>[
-                      Text(
-                        'MNIST database of handwritten digits',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      Text(
-                        'The digits have been size-normalized and centered in a fixed-size images (28 x 28)',
-                      )
-                    ],
+          SizedBox(height: 10.0),
+          RepaintBoundary(
+            key: canvasKey,
+            child: Stack(
+              alignment: Alignment.center,
+              children: [
+                /// divider listview
+                Container(
+                  child: ListView.builder(
+                    shrinkWrap: true,
+                    physics: const NeverScrollableScrollPhysics(),
+                    // itemCount: int.parse(
+                    //     '${(height * 0.90 / 50).ceil()}'),
+                    itemCount: 8,
+                    itemBuilder: (BuildContext context, int index) {
+                      return const Divider(
+                        color: Colors.black,
+                        height: 50.0,
+                        indent: 20.0,
+                        endIndent: 20.0,
+                      );
+                    },
                   ),
+                  color: Colors.white,
                 ),
-              ),
-              _mnistPreviewImage(),
-            ],
+                _drawCanvasWidget(),
+              ],
+            ),
           ),
-          SizedBox(
-            height: 10,
-          ),
-          _drawCanvasWidget(),
-          SizedBox(
-            height: 10,
-          ),
-          PredictionWidget(
-            predictions: _prediction,
-          ),
+          SizedBox(height: 10.0),
+          PredictionWidget(predictions: _prediction),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -81,23 +92,29 @@ class _DrawScreenState extends State<DrawScreen> {
 
   Widget _drawCanvasWidget() {
     return Container(
-      width: Constants.canvasSize + Constants.borderSize * 2,
-      height: Constants.canvasSize + Constants.borderSize * 2,
+      width: 304.0,
+      height: 304.0,
       decoration: BoxDecoration(
-        border: Border.all(
-          color: Colors.black,
-          width: Constants.borderSize,
-        ),
+        border: Border.all(color: Colors.black, width: 2.0),
       ),
       child: GestureDetector(
         onPanUpdate: (DragUpdateDetails details) {
           Offset _localPosition = details.localPosition;
           if (_localPosition.dx >= 0 &&
-              _localPosition.dx <= Constants.canvasSize &&
+              _localPosition.dx <= 300.0 &&
               _localPosition.dy >= 0 &&
-              _localPosition.dy <= Constants.canvasSize) {
+              _localPosition.dy <= 300.0) {
             setState(() {
-              _points.add(_localPosition);
+              _points.add(
+                DrawingArea(
+                  point: details.localPosition,
+                  areaPaint: Paint()
+                    ..strokeCap = StrokeCap.round
+                    ..isAntiAlias = true
+                    ..color = Colors.lightGreenAccent
+                    ..strokeWidth = 8.0,
+                ),
+              );
             });
           }
         },
@@ -112,41 +129,21 @@ class _DrawScreenState extends State<DrawScreen> {
     );
   }
 
-  Widget _mnistPreviewImage() {
-    return Container(
-      width: 100,
-      height: 100,
-      color: Colors.black,
-      child: FutureBuilder(
-        future: _previewImage(),
-        builder: (BuildContext _, snapshot) {
-          if (snapshot.hasData) {
-            return Image.memory(
-              snapshot.data,
-              fit: BoxFit.fill,
-            );
-          } else {
-            return Center(
-              child: Text('Error'),
-            );
-          }
-        },
-      ),
-    );
-  }
-
   void _initModel() async {
     var res = await _recognizer.loadModel();
   }
 
-  Future<Uint8List> _previewImage() async {
-    return await _recognizer.previewImage(_points);
-  }
-
   void _recognize() async {
-    List<dynamic> pred = await _recognizer.recognize(_points);
+    List<dynamic> pred = await _recognizer.recognize(context, _points);
     setState(() {
       _prediction = pred.map((json) => Prediction.fromJson(json)).toList();
     });
   }
+}
+
+class DrawingArea {
+  Offset point;
+  Paint areaPaint;
+
+  DrawingArea({this.point, this.areaPaint});
 }
