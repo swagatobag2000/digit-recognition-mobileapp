@@ -23,7 +23,7 @@ class Recognizer {
     Tflite.close();
 
     return Tflite.loadModel(
-      model: "assets/hand_written_digit_model.tflite",
+      model: "assets/mnist.tflite",
       labels: "assets/mnist.txt",
     );
   }
@@ -71,14 +71,15 @@ class Recognizer {
 
   Picture pointsToPicture(BuildContext context, List<DrawingArea> points) {
     final recorder = PictureRecorder();
-    final canvas = Canvas(recorder)..scale(Constants.mnistImageSize / 300.0);
+    final canvas = Canvas(recorder)
+      ..scale(Constants.mnistImageSize / Constants.blockSizeHorizontal,Constants.mnistImageSize / Constants.blockSizeVertical);
     canvas.drawRect(
         Rect.fromLTWH(
           0,
           0,
-          // MediaQuery.of(context).size.width.toDouble(),
-          // MediaQuery.of(context).size.height.toDouble(),
-          300.0, 300.0,
+          Constants.blockSizeHorizontal,
+          Constants.blockSizeVertical,
+          // 300.0, 300.0,
         ),
         _bgPaint);
     for (int i = 0; i < points.length - 1; i++) {
@@ -86,6 +87,7 @@ class Recognizer {
         canvas.drawLine(points[i].point, points[i + 1].point, _whitePaint);
       }
     }
+
     return recorder.endRecording();
   }
 }

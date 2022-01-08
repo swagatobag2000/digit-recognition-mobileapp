@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:mnistdigitrecognizer/screens/draw_screen.dart';
+import 'package:mnistdigitrecognizer/utils/constants.dart';
+// import 'package:flutter/widgets.dart';
 
 void main() {
   runApp(MyApp());
@@ -8,6 +10,7 @@ void main() {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+
     return MaterialApp(
       title: 'Mnist Digit Recognizer',
       debugShowCheckedModeBanner: false,

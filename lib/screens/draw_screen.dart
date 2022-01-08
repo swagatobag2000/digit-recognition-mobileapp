@@ -29,6 +29,7 @@ class _DrawScreenState extends State<DrawScreen> {
 
   @override
   Widget build(BuildContext context) {
+    Constants().init(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Digit Recognizer'),
@@ -41,6 +42,14 @@ class _DrawScreenState extends State<DrawScreen> {
                 print(pngBytes);
               },
               icon: Icon(Icons.save_rounded)),
+          IconButton(
+              onPressed: () {
+                setState(() {
+                  _points.clear();
+                  _prediction.clear();
+                });
+              },
+              icon: Icon(Icons.close)),
         ],
       ),
       body: Column(
@@ -78,32 +87,24 @@ class _DrawScreenState extends State<DrawScreen> {
           PredictionWidget(predictions: _prediction),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.clear),
-        onPressed: () {
-          setState(() {
-            _points.clear();
-            _prediction.clear();
-          });
-        },
-      ),
+
     );
   }
 
   Widget _drawCanvasWidget() {
     return Container(
-      width: 304.0,
-      height: 304.0,
+      width: Constants.blockSizeHorizontal,
+      height: Constants.blockSizeVertical,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black, width: 2.0),
+        border: Border.all(color: Colors.black, width: Constants.borderSize * 2),
       ),
       child: GestureDetector(
         onPanUpdate: (DragUpdateDetails details) {
           Offset _localPosition = details.localPosition;
           if (_localPosition.dx >= 0 &&
-              _localPosition.dx <= 300.0 &&
+              _localPosition.dx <= Constants.blockSizeHorizontal &&
               _localPosition.dy >= 0 &&
-              _localPosition.dy <= 300.0) {
+              _localPosition.dy <= Constants.blockSizeVertical) {
             setState(() {
               _points.add(
                 DrawingArea(
@@ -112,7 +113,7 @@ class _DrawScreenState extends State<DrawScreen> {
                     ..strokeCap = StrokeCap.round
                     ..isAntiAlias = true
                     ..color = Colors.lightGreenAccent
-                    ..strokeWidth = 8.0,
+                    ..strokeWidth = 15.0,
                 ),
               );
             });
@@ -138,6 +139,7 @@ class _DrawScreenState extends State<DrawScreen> {
     setState(() {
       _prediction = pred.map((json) => Prediction.fromJson(json)).toList();
     });
+    print(_prediction.first.label);
   }
 }
 
