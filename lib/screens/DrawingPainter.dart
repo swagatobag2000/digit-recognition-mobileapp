@@ -1,10 +1,7 @@
 import 'dart:ui';
-
 import 'package:flutter/material.dart';
-import 'package:mnistdigitrecognizer/models/DrawingArea.dart';
-import 'package:mnistdigitrecognizer/utils/Constants.dart';
-
-import 'DrawScreen.dart';
+import '../models/DrawingArea.dart';
+import '../utils/Constants.dart';
 
 class DrawingPainter extends CustomPainter {
   final List<DrawingArea> points;

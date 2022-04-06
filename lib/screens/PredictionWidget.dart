@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:mnistdigitrecognizer/models/Prediction.dart';
-import 'package:mnistdigitrecognizer/utils/Constants.dart';
+import '../models/Prediction.dart';
+import '../utils/Constants.dart';
 
 class PredictionWidget extends StatelessWidget {
   final List<Prediction> predictions;

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:mnistdigitrecognizer/screens/DrawScreen.dart';
-
+import 'screens/DrawScreen.dart';
 void main() {
   runApp(MyApp());
 }

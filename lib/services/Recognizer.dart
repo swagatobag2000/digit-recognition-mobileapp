@@ -2,10 +2,9 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:mnistdigitrecognizer/models/DrawingArea.dart';
-import 'package:mnistdigitrecognizer/screens/DrawScreen.dart';
-import 'package:mnistdigitrecognizer/utils/Constants.dart';
 import 'package:tflite/tflite.dart';
+import '../models/DrawingArea.dart';
+import '../utils/Constants.dart';
 
 // final _canvasCullRect = Rect.fromPoints(
 //   Offset(0, 0),

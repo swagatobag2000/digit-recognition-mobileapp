@@ -1,12 +1,11 @@
 import 'dart:typed_data';
 import 'package:flutter/material.dart';
-import 'package:mnistdigitrecognizer/models/DrawingArea.dart';
-import 'package:mnistdigitrecognizer/models/Prediction.dart';
-import 'package:mnistdigitrecognizer/screens/DrawingPainter.dart';
-import 'package:mnistdigitrecognizer/screens/MainResult.dart';
-import 'package:mnistdigitrecognizer/screens/PredictionWidget.dart';
-import 'package:mnistdigitrecognizer/services/Recognizer.dart';
-import 'package:mnistdigitrecognizer/utils/Constants.dart';
+import '../models/DrawingArea.dart';
+import '../models/Prediction.dart';
+import '../screens/DrawingPainter.dart';
+import '../screens/PredictionWidget.dart';
+import '../services/Recognizer.dart';
+import '../utils/Constants.dart';
 
 class DrawScreen extends StatefulWidget {
   const DrawScreen({Key key}) : super(key: key);
