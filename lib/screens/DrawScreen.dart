@@ -1,11 +1,12 @@
 import 'dart:typed_data';
-
 import 'package:flutter/material.dart';
-import 'package:mnistdigitrecognizer/models/prediction.dart';
-import 'package:mnistdigitrecognizer/screens/drawing_painter.dart';
-import 'package:mnistdigitrecognizer/screens/prediction_widget.dart';
-import 'package:mnistdigitrecognizer/services/recognizer.dart';
-import 'package:mnistdigitrecognizer/utils/constants.dart';
+import 'package:mnistdigitrecognizer/models/DrawingArea.dart';
+import 'package:mnistdigitrecognizer/models/Prediction.dart';
+import 'package:mnistdigitrecognizer/screens/DrawingPainter.dart';
+import 'package:mnistdigitrecognizer/screens/MainResult.dart';
+import 'package:mnistdigitrecognizer/screens/PredictionWidget.dart';
+import 'package:mnistdigitrecognizer/services/Recognizer.dart';
+import 'package:mnistdigitrecognizer/utils/Constants.dart';
 
 class DrawScreen extends StatefulWidget {
   const DrawScreen({Key key}) : super(key: key);
@@ -32,16 +33,9 @@ class _DrawScreenState extends State<DrawScreen> {
     Constants().init(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text('Digit Recognizer'),
+        title: Text('Handwritten Digit Recognition'),
         actions: [
-          IconButton(
-              onPressed: () async {
-                final picture = Recognizer().pointsToPicture(context, _points);
-                Uint8List pngBytes = await Recognizer()
-                    .imageToByteListUint8(picture, Constants.mnistImageSize);
-                print(pngBytes);
-              },
-              icon: Icon(Icons.save_rounded)),
+          // Cancel Button
           IconButton(
               onPressed: () {
                 setState(() {
@@ -54,41 +48,17 @@ class _DrawScreenState extends State<DrawScreen> {
       ),
       body: Column(
         children: <Widget>[
-          SizedBox(height: 10.0),
+          SizedBox(height: Constants.screenHeight * 0.02),
           RepaintBoundary(
             key: canvasKey,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                /// divider listview
-                Container(
-                  child: ListView.builder(
-                    shrinkWrap: true,
-                    physics: const NeverScrollableScrollPhysics(),
-                    // itemCount: int.parse(
-                    //     '${(height * 0.90 / 50).ceil()}'),
-                    itemCount: 8,
-                    itemBuilder: (BuildContext context, int index) {
-                      return const Divider(
-                        color: Colors.black,
-                        height: 50.0,
-                        indent: 20.0,
-                        endIndent: 20.0,
-                      );
-                    },
-                  ),
-                  color: Colors.white,
-                ),
-                _drawCanvasWidget(),
-              ],
-            ),
+            child: _drawCanvasWidget(),
           ),
-          SizedBox(height: 10.0),
+          SizedBox(height: Constants.screenHeight * 0.02),
           PredictionWidget(predictions: _prediction),
         ],
       ),
-
     );
+
   }
 
   Widget _drawCanvasWidget() {
@@ -96,7 +66,7 @@ class _DrawScreenState extends State<DrawScreen> {
       width: Constants.blockSizeHorizontal,
       height: Constants.blockSizeVertical,
       decoration: BoxDecoration(
-        border: Border.all(color: Colors.black, width: Constants.borderSize * 2),
+        border: Border.all(color: Colors.black, width: Constants.borderSize),
       ),
       child: GestureDetector(
         onPanUpdate: (DragUpdateDetails details) {
@@ -112,8 +82,8 @@ class _DrawScreenState extends State<DrawScreen> {
                   areaPaint: Paint()
                     ..strokeCap = StrokeCap.round
                     ..isAntiAlias = true
-                    ..color = Colors.lightGreenAccent
-                    ..strokeWidth = 15.0,
+                    ..color = Colors.redAccent
+                    ..strokeWidth = Constants.strokeWidth,
                 ),
               );
             });
@@ -135,17 +105,11 @@ class _DrawScreenState extends State<DrawScreen> {
   }
 
   void _recognize() async {
-    List<dynamic> pred = await _recognizer.recognize(context, _points);
+    List<dynamic> predictions = await _recognizer.recognize(context, _points);
     setState(() {
-      _prediction = pred.map((json) => Prediction.fromJson(json)).toList();
+      _prediction = predictions.map((json) => Prediction.fromJson(json)).toList();
     });
     print(_prediction.first.label);
   }
 }
 
-class DrawingArea {
-  Offset point;
-  Paint areaPaint;
-
-  DrawingArea({this.point, this.areaPaint});
-}

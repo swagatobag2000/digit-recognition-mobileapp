@@ -2,8 +2,9 @@ import 'dart:typed_data';
 import 'dart:ui';
 
 import 'package:flutter/material.dart';
-import 'package:mnistdigitrecognizer/screens/draw_screen.dart';
-import 'package:mnistdigitrecognizer/utils/constants.dart';
+import 'package:mnistdigitrecognizer/models/DrawingArea.dart';
+import 'package:mnistdigitrecognizer/screens/DrawScreen.dart';
+import 'package:mnistdigitrecognizer/utils/Constants.dart';
 import 'package:tflite/tflite.dart';
 
 // final _canvasCullRect = Rect.fromPoints(
@@ -23,8 +24,8 @@ class Recognizer {
     Tflite.close();
 
     return Tflite.loadModel(
-      model: "assets/mnist.tflite",
-      labels: "assets/mnist.txt",
+      model: "assets/digit_recognition.tflite",
+      labels: "assets/digit_label.txt",
     );
   }
 
@@ -32,16 +33,16 @@ class Recognizer {
     Tflite.close();
   }
 
-  Future<Uint8List> previewImage(
-      BuildContext context, List<DrawingArea> points) async {
-    final picture = pointsToPicture(context, points);
-    final image = await picture.toImage(
-        Constants.mnistImageSize, Constants.mnistImageSize);
-    var pngBytes = await image.toByteData(format: ImageByteFormat.png);
-    print('preview image');
-
-    return pngBytes.buffer.asUint8List();
-  }
+  // Future<Uint8List> previewImage(
+  //     BuildContext context, List<DrawingArea> points) async {
+  //   final picture = pointsToPicture(context, points);
+  //   final image = await picture.toImage(
+  //       Constants.mnistImageSize, Constants.mnistImageSize);
+  //   var pngBytes = await image.toByteData(format: ImageByteFormat.png);
+  //   print('preview image');
+  //
+  //   return pngBytes.buffer.asUint8List();
+  // }
 
   Future recognize(BuildContext context, List<DrawingArea> points) async {
     final picture = pointsToPicture(context, points);
@@ -72,7 +73,8 @@ class Recognizer {
   Picture pointsToPicture(BuildContext context, List<DrawingArea> points) {
     final recorder = PictureRecorder();
     final canvas = Canvas(recorder)
-      ..scale(Constants.mnistImageSize / Constants.blockSizeHorizontal,Constants.mnistImageSize / Constants.blockSizeVertical);
+      ..scale(Constants.mnistImageSize / Constants.blockSizeHorizontal,
+          Constants.mnistImageSize / Constants.blockSizeVertical);
     canvas.drawRect(
         Rect.fromLTWH(
           0,
