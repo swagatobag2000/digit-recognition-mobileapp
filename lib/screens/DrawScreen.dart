@@ -1,4 +1,3 @@
-import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import '../models/DrawingArea.dart';
 import '../models/Prediction.dart';
